@@ -29,6 +29,12 @@
                     </flux:navbar.item>
                 </flux:tooltip>
 
+                <flux:tooltip :content="__('Projeto aberto')" position="bottom">
+                    <flux:navbar.item icon="github" target="_blank" href="https://github.com/LukasCCB/saque-SuitPay">
+                        GitHub
+                    </flux:navbar.item>
+                </flux:tooltip>
+
                 <flux:tooltip :content="__('Contatar Desenvolvedor')" position="bottom">
                     <flux:navbar.item icon="chat-bubble-left-right" target="_blank" href="https://wa.me/5547999302240?text=Ajuda na plataforma de saque SuitPay">
                         Desenvolvedor
@@ -61,6 +67,10 @@
             <flux:navlist variant="outline">
                 <flux:navbar.item icon="document-text" arget="_blank" href="https://api.suitpay.app/?_gl=1*1jb0u2t*_gcl_au*OTAyMDA0MDguMTc1MjYyMTk3MA..">
                     Documentação
+                </flux:navbar.item>
+
+                <flux:navbar.item icon="github" target="_blank" href="https://github.com/LukasCCB/saque-SuitPay">
+                    GitHub
                 </flux:navbar.item>
 
                 <flux:navbar.item icon="chat-bubble-left-right" target="_blank" href="https://wa.me/5547999302240?text=Ajuda na plataforma de saque SuitPay">
