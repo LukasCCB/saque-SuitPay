@@ -22,7 +22,7 @@
 
                 <flux:field>
                     <flux:label badge="Obrigatório">Chave Púbica</flux:label>
-                    <flux:input wire:model="key_pub" type="password" placeholder="sk_......" size="sm" viewable required
+                    <flux:input wire:model="key_pub" type="password" placeholder="pk_......" size="sm" viewable required
                                 clearable/>
 
                 </flux:field>
@@ -73,6 +73,11 @@
 
                     <flux:input wire:model="pix_key" required placeholder="Digite sua chave PIX..." size="sm" clearable/>
                 </flux:input.group>
+
+                <flux:field>
+                    <flux:label badge="Proprietário da chave PIX">Número CPF</flux:label>
+                    <flux:input wire:model="cpf" type="text" placeholder="999.999.999-99" mask="999.999.999-99"  size="sm" clearable required/>
+                </flux:field>
 
                 <flux:field>
                     <flux:label badge="R$">Valor</flux:label>

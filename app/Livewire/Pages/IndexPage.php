@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Illuminate\Support\Facades\Http;
 
 class IndexPage extends Component
 {
@@ -22,6 +23,9 @@ class IndexPage extends Component
 
     #[Validate('required|string|in:document,randomKey,phoneNumber,email,paymentCode')]
     public $pix_key_type;
+
+    #[Validate('required|string')]
+    public $cpf;
 
     #[Validate('required|integer|min:10')]
     public $amount;
@@ -42,10 +46,6 @@ class IndexPage extends Component
 
     public function suitpay(array $data)
     {
-        $client = new Client;
-
-        $host = 'https://ws.suitpay.app/api/v1'; // https://ws.suitpay.app
-
         $referenceID = Str::uuid()->toString();
 
         $body = [
@@ -53,26 +53,16 @@ class IndexPage extends Component
             'typeKey' => $data['pix_key_type'],
             'value' => $data['amount'],
             'callbackUrl' => 'https://webhook.site/957732e1-5f19-41d6-8f20-c1024623c4fd',
-            'documentValidation' => $this->genCPF(),
+            'documentValidation' => $data['cpf'],
             'externalId' => $referenceID,
         ];
 
-        $headers = [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'ci' => $data['key_pub'],
-            'cs' => $data['key_secret'],
-        ];
-
-        $response = $client->request('POST', $host."/gateway/pix-payment", [
-            'http_errors' => false,
-            'headers' => $headers,
-            'json' => $body,
-        ]);
+        $response = Http::suitpay( $data['key_pub'], $data['key_secret'])
+            ->timeout(20)
+            ->retry(3, 200)
+            ->post('/gateway/pix-payment', $body);
 
         $data = json_decode((string) $response->getBody(), true);
-
-        Log::info($data);
 
         $status = 'Sucesso';
 
@@ -84,32 +74,6 @@ class IndexPage extends Component
         $message = data_get($data, 'message', 'Desconhecido');
 
         $this->live_log = now()->format('h:m:i d/m/Y') . " | [$status]: $message";
-
-    }
-
-    public function genCPF(): string
-    {
-        $n = [];
-        for ($i = 0; $i < 9; $i++) {
-            $n[$i] = rand(0, 9);
-        }
-
-        $d1 = 0;
-        for ($i = 0, $j = 10; $i < 9; $i++, $j--) {
-            $d1 += $n[$i] * $j;
-        }
-        $d1 = 11 - ($d1 % 11);
-        $d1 = ($d1 >= 10) ? 0 : $d1;
-
-        $d2 = 0;
-        for ($i = 0, $j = 11; $i < 9; $i++, $j--) {
-            $d2 += $n[$i] * $j;
-        }
-        $d2 += $d1 * 2;
-        $d2 = 11 - ($d2 % 11);
-        $d2 = ($d2 >= 10) ? 0 : $d2;
-
-        return implode('', $n).$d1.$d2;
     }
 
     public function render()
